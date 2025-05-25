@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Converter</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dceeff, #f0f4ff);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .converter {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #007bff;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 14px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .result {
+      margin-top: 25px;
+      font-weight: bold;
+      text-align: center;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #444;
+      font-size: 15px;
+      padding: 10px;
+      font-style: italic;
+      animation: fadeIn 2s ease-in;
+    }
+
+    .footer::before {
+      content: "🌐 ";
+    }
+
+    .footer span {
+      color: #007bff;
+      font-weight: 600;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h2>Currency Converter</h2>
+    <input type="number" id="amount" placeholder="Enter amount" />
+    <select id="fromCurrency"></select>
+    <select id="toCurrency"></select>
+    <button onclick="convertCurrency()">Convert</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="footer">Created by <span>J. Pavan Tej</span></div>
+
+  <script>
+    const fromCurrency = document.getElementById('fromCurrency');
+    const toCurrency = document.getElementById('toCurrency');
+    const currencyList = ["USD", "EUR", "INR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "ZAR"];
+
+    // Populate dropdowns
+    currencyList.forEach(currency => {
+      fromCurrency.innerHTML += `<option value="${currency}">${currency}</option>`;
+      toCurrency.innerHTML += `<option value="${currency}">${currency}</option>`;
+    });
+
+    fromCurrency.value = "USD";
+    toCurrency.value = "INR";
+
+    async function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const from = fromCurrency.value;
+      const to = toCurrency.value;
+
+      if (isNaN(amount)) {
+        document.getElementById("result").innerText = "Please enter a valid amount.";
+        return;
+      }
+
+      const apiKey = "https://api.exchangerate-api.com/v4/latest/" + from;
+
+      try {
+        const response = await fetch(apiKey);
+        const data = await response.json();
+        const rate = data.rates[to];
+        const converted = (amount * rate).toFixed(2);
+
+        document.getElementById("result").innerText = 
+          `${amount} ${from} = ${converted} ${to}`;
+      } catch (error) {
+        document.getElementById("result").innerText = "Error fetching exchange rates.";
+      }
+    }
+  </script>
+</body>
+</html>
